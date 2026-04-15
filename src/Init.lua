@@ -54,11 +54,11 @@ local ReGui = {
 
 
 --// Modules
-local IDE = require("@lib/ide.lua")
-local Wrappers = require("@classes/Wrappers.lua")
-local Animation = require("@classes/Animations.lua")
-local Signaling = require("@classes/Signaling.lua")
-ReGui.DemoWindow = require("@src/Demo Window.lua")
+local IDE = loadstring("https://raw.githubusercontent.com/pitzachef/ReDockGui/refs/heads/main/lib/ide.lua")
+local Wrappers = require("./classes/Wrappers.lua")
+local Animation = require("./classes/Animations.lua")
+local Signaling = require("./classes/Signaling.lua")
+ReGui.DemoWindow = require("./Demo Window.lua")
 ReGui.Services = Wrappers.Services
 ReGui.Animation = Animation
 
