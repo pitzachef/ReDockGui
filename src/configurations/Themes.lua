@@ -2,7 +2,7 @@ type ThemeData = {
 	[string]: any
 }
 
-local Accent = require("@config/Accent.lua")
+local Accent = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/refs/heads/main/src/configurations/Accent.lua"))()
 local ThemeConfigs = {}
 
 ThemeConfigs.DarkTheme = {
