@@ -56,10 +56,10 @@ local ReGui = {
 
 
 --// Modules
-local IDE = loadstring("https://raw.githubusercontent.com/pitzachef/ReDockGui/refs/heads/main/lib/ide.lua")()
-local Wrappers = loadstring("https://github.com/pitzachef/ReDockGui/blob/main/src/classes/Wrappers.lua?raw=true")()
-local Animation = loadstring("https://github.com/pitzachef/ReDockGui/blob/main/src/classes/Animations.lua?raw=true")()
-local Signaling = loadstring("https://github.com/pitzachef/ReDockGui/blob/main/src/classes/Signaling.lua?raw=true")()
+local IDE = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/lib/ide.lua"))()
+local Wrappers = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/classes/Wrappers.lua"))()
+local Animation = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/classes/Animations.lua"))()
+local Signaling = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/classes/Signaling.lua"))()
 ReGui.DemoWindow = require("./Demo Window.lua")
 ReGui.Services = Wrappers.Services
 ReGui.Animation = Animation
