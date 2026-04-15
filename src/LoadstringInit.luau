@@ -65,12 +65,12 @@ ReGui.Services = Wrappers.Services
 ReGui.Animation = Animation
 
 --// Configurations
-ReGui.Icons = require("@config/Icons.lua")
-ReGui.Accent = require("@config/Accent.lua")
-ReGui.ThemeConfigs = require("@config/Themes.lua")
-ReGui.ElementFlags = require("@config/Flags.lua")
+ReGui.Icons = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/configurations/Icons.lua"))()
+ReGui.Accent = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/configurations/Accent.lua"))()
+ReGui.ThemeConfigs = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/configurations/Themes.lua"))()
+ReGui.ElementFlags = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/configurations/Flags.lua"))()
 
-local Tags = require("@config/Tagging.lua")
+local Tags = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/configurations/Tagging.lua"))()
 ReGui.ElementColors = Tags.Coloring
 ReGui.Animations = Tags.Animations
 ReGui.Styles = Tags.Styles
