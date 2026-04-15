@@ -60,7 +60,7 @@ local IDE = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef
 local Wrappers = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/classes/Wrappers.lua"))()
 local Animation = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/classes/Animations.lua"))()
 local Signaling = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/classes/Signaling.lua"))()
-ReGui.DemoWindow = require("./Demo Window.lua")
+ReGui.DemoWindow = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/Demo Window.lua"))()
 ReGui.Services = Wrappers.Services
 ReGui.Animation = Animation
 
