@@ -73,6 +73,4 @@ if hint then
 end
 
 --// execute init
-return (loadfile and loadfile("ReDockGui/Init.lua"))
-	or (loadstring and loadstring(readfile("ReDockGui/Init.lua")))
-	and (loadstring(readfile("ReDockGui/Init.lua")))()
+return loadfile("ReDockGui/Init.luau")
