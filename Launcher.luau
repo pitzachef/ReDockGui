@@ -1,4 +1,3 @@
---// launcher for the regui
 local repo = "https://raw.githubusercontent.com/pitzachef/ReDockGui/main/src/"
 
 local writefile = writefile or function() error("writefile unsupported") end
@@ -7,7 +6,7 @@ local readfile = readfile or function() end
 local isfile = isfile or function() return false end
 local isfolder = isfolder or function() return false end
 
-local hint = _G.hint or getgenv().hints
+local hint = _G.Hint and {}
 
 local function ensurePath(path)
 	local parts = path:split("/")
@@ -25,8 +24,8 @@ local function download(file)
 	if hint then
 		local h = Instance.new("Hint")
 		h.Text = "Downloading: " .. file
-		h.Parent = game:GetService("Workspace")
-		hint[#hint + 1] = h
+		h.Parent = game:GetService("CoreGui")
+		table.insert(hint, h)
 	end
 
 	local ok, res = pcall(game.HttpGet, game, repo .. file)
@@ -44,7 +43,6 @@ local function download(file)
 	end
 end
 
---// files
 local files = {
 	"Init.lua",
 	"Demo Window.lua",
@@ -62,7 +60,6 @@ for i = 1, #files do
 	download(files[i])
 end
 
---// cleanup hints
 if hint then
 	task.wait()
 	for i = 1, #hint do
@@ -72,5 +69,4 @@ if hint then
 	end
 end
 
---// execute init
-return loadfile("ReDockGui/Init.luau")
+return loadfile("ReDockGui/Init.lua")
