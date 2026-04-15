@@ -1,3 +1,4 @@
+--!optimize 2
 warn("version 1.5")
 local ReGui = {
     Version = "1.5",
