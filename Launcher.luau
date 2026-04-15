@@ -7,7 +7,7 @@ local readfile = readfile or function() end
 local isfile = isfile or function() return false end
 local isfolder = isfolder or function() return false end
 
-local hint = _G.Hint == true and {}
+local hint = _G.hint or getgenv().hints
 
 local function ensurePath(path)
 	local parts = path:split("/")
@@ -25,7 +25,7 @@ local function download(file)
 	if hint then
 		local h = Instance.new("Hint")
 		h.Text = "Downloading: " .. file
-		h.Parent = game:GetService("CoreGui")
+		h.Parent = game:GetService("Workspace")
 		hint[#hint + 1] = h
 	end
 
