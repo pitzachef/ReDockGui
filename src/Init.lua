@@ -11,6 +11,8 @@
     https://github.com/depthso
 ]]
 
+warn("version 1.4.8_DOCK")
+
 local ReGui = {
 	--// Package data
 	Version = "1.4.8_DOCK",
