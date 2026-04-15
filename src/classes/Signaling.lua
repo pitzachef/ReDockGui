@@ -16,7 +16,7 @@ type table = {
 local Signal = {} :: SignalClass
 Signal.__index = Signal
 
-local Wrappers = require("@classes/Wrappers.lua")
+local Wrappers = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/refs/heads/main/src/classes/Wrappers.lua"))()
 
 function Signal:Fire(...)
 	local Connections = self:GetConnections()
