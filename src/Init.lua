@@ -56,7 +56,7 @@ local ReGui = {
 
 
 --// Modules
-local IDE = loadstring("https://raw.githubusercontent.com/pitzachef/ReDockGui/refs/heads/main/lib/ide.lua")
+local IDE = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/main/lib/ide.lua"))()
 local Wrappers = require("./classes/Wrappers.lua")
 local Animation = require("./classes/Animations.lua")
 local Signaling = require("./classes/Signaling.lua")
