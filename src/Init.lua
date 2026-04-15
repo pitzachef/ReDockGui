@@ -13,16 +13,16 @@
 
 local ReGui = {
 	--// Package data
-	Version = "1.4.7",
+	Version = "1.4.8_DOCK",
 	Author = "Depso",
 	License = "MIT",
-	Repository = "https://github.com/Jibbefr/Dear-ReGui-Edited/",
+	Repository = "https://github.com/pitzachef/ReDockGui",
 
 	--// Configuration
 	Debug = false,
 	PrefabsId = 71968920594655,
-	DefaultTitle = "ReGui",
-	ContainerName = "ReGui",
+	DefaultTitle = "ReDockGui",
+	ContainerName = "ReDockGui",
 	DoubleClickThreshold = 0.3,
 	TooltipOffset = 15,
 	IniToSave = {
@@ -175,12 +175,12 @@ local function SortByQuery(Table: table, Query: string): table
 end
 
 function ReGui:Warn(...: string?)
-	warn("[ReGui]::", ...)
+	warn("[ReDockGui]::", ...)
 end
 
 function ReGui:Error(...: string?)
 	local Concated = ReGui:Concat({...}, " ")
-	local Message = `\n[ReGui]:: {Concated}`
+	local Message = `\n[ReDockGui]:: {Concated}`
 	coroutine.wrap(error)(Message)
 end
 
@@ -6275,6 +6275,16 @@ export type WindowFlags = {
 	IsClosed: boolean?,
 	Collapsed: boolean?,
 	IsDragging: boolean?,
+	IsDocking: boolean?,
+	DockTarget: UDim2?,
+	DockEnabled: boolean?,
+	DockPadding: number?,
+	DockThreshold: number?,
+	DockAnimationTime: number?,
+	DockToEdges: boolean?,
+	DockToWindows: boolean?,
+	SnapPreview: boolean?,
+	SnapPreviewFrame: GuiObject?,
 	MinSize: Vector2?,
 	Theme: any?,
 	Title: string?,
@@ -6308,6 +6318,7 @@ export type WindowFlags = {
 	Parent: Instance,
 	AutomaticSize: string?
 }
+
 ReGui:DefineElement("Window", {
 	Export = true,
 	Base = {
@@ -6324,12 +6335,18 @@ ReGui:DefineElement("Window", {
 		NoWindowRegistor = false,
 		NoBringToFrontOnFocus = false,
 		IsDragging = false,
+		IsDocking = false,
+		DockEnabled = true,
+		DockPadding = 6,
+		DockThreshold = 28,
+		DockAnimationTime = 0.18,
+		DockToEdges = true,
+		DockToWindows = true,
+		SnapPreview = false
 	},
 	Create = function(self, Config: WindowFlags)
-		--// Check if ReGui has prefabs
 		ReGui:CheckImportState()
 
-		--// Global config unpack
 		local Windows = ReGui.Windows
 		local WindowsContainer = ReGui.Container.Windows
 
@@ -6338,7 +6355,6 @@ ReGui:DefineElement("Window", {
 			Title = ReGui.DefaultTitle
 		})
 
-		--// Unpack config
 		local NoTitleButtons = Config.NoDefaultTitleBarButtons
 		local Collapsed = Config.Collapsed
 		local MinimumSize = Config.MinimumSize
@@ -6349,7 +6365,46 @@ ReGui:DefineElement("Window", {
 		local AutomaticSize = Config.AutomaticSize
 		local NoWindowRegistor = Config.NoWindowRegistor
 		local AutoSelectNewTabs = Config.AutoSelectNewTabs
+		local DockEnabled = Config.DockEnabled
+		local DockPadding = Config.DockPadding
+		local DockThreshold = Config.DockThreshold
+		local DockAnimationTime = Config.DockAnimationTime
+		local DockToEdges = Config.DockToEdges
+		local DockToWindows = Config.DockToWindows
 		local _SelectDisabled = Config.Parent ~= WindowsContainer
+
+		local DockState = {
+			Active = false,
+			Target = nil
+		}
+
+		local function getDockTarget(pos: Vector2, size: Vector2)
+			local viewport = workspace.CurrentCamera.ViewportSize
+			local pad = DockPadding or 6
+			local threshold = DockThreshold or 28
+
+			local best = nil
+			local bestDist = math.huge
+
+			if DockToEdges then
+				local left = Vector2.new(pad, pos.Y)
+				local right = Vector2.new(viewport.X - size.X - pad, pos.Y)
+				local top = Vector2.new(pos.X, pad)
+				local bottom = Vector2.new(pos.X, viewport.Y - size.Y - pad)
+
+				local candidates = { left, right, top, bottom }
+
+				for _, c in ipairs(candidates) do
+					local d = (pos - c).Magnitude
+					if d < threshold and d < bestDist then
+						bestDist = d
+						best = c
+					end
+				end
+			end
+
+			return best
+		end
 
 		local CanvasConfig = {
 			Scroll = not NoScroll,
@@ -6358,7 +6413,6 @@ ReGui:DefineElement("Window", {
 			AutoSelectNewTabs = AutoSelectNewTabs
 		}
 
-		--// Merge AutomaticSize configuration 
 		if AutomaticSize then
 			Merge(CanvasConfig, {
 				AutomaticSize = AutomaticSize,
@@ -6366,30 +6420,24 @@ ReGui:DefineElement("Window", {
 			})
 		end
 
-		--// Create Window frame
 		local Window = ReGui:InsertPrefab("Window", Config)
 		local ContentFrame = Window.Content
 		local TitleBar = ContentFrame.TitleBar
 
-		--// Create window class
 		local Class = Wrappers:NewClass(WindowClass)
 
-		--// Content canvas
 		local BaseCanvas = ReGui:MakeCanvas({
 			Element = ContentFrame,
 			WindowClass = Class,
 			Class = Class
 		})
 
-		--// Create Window content canvas
 		local Canvas, Body, WindowClass = nil, nil, nil
 		local WindowCanvas, CanvasFrame = BaseCanvas:Canvas(Copy(CanvasConfig, {
 			Parent = ContentFrame,
 			CornerRadius = UDim.new(0, 0),
-			--NoStyle = true
 		}))
 
-		--// Make the window resizable
 		local ResizeConnection = ReGui:MakeResizable({
 			MinimumSize = MinimumSize,
 			Resize = Window,
@@ -6398,10 +6446,9 @@ ReGui:DefineElement("Window", {
 			end,
 		})
 
-		--// Merge tables
 		Merge(Class, Config)
 		Merge(Class, {
-			WindowFrame = Window,  
+			WindowFrame = Window,
 			ContentFrame = ContentFrame,
 			CanvasFrame = CanvasFrame,
 			ResizeGrab = ResizeConnection.Grab,
@@ -6410,15 +6457,15 @@ ReGui:DefineElement("Window", {
 			TagsList = {},
 			_SelectDisabled = _SelectDisabled,
 
-			--// Connections
 			ResizeConnection = ResizeConnection,
 			HoverConnection = ReGui:DetectHover(ContentFrame),
+
 			DragConnection = ReGui:MakeDraggable({
 				Grab = ContentFrame,
 				Move = Window,
+
 				SetPosition = function(self, Position: UDim2)
 					local Tweeninfo = Canvas:GetThemeKey("AnimationTweenInfo")
-					--// Tween frame element to the new size
 					Animation:Tween({
 						Tweeninfo = Tweeninfo,
 						Object = self.Move,
@@ -6427,75 +6474,84 @@ ReGui:DefineElement("Window", {
 						}
 					})
 				end,
+
 				OnDragStateChange = function(IsDragging: boolean)
 					Class.IsDragging = IsDragging
 					CanvasFrame.Interactable = not IsDragging
 
-					--// Change window focus on drag
 					if IsDragging then
 						ReGui:SetFocusedWindow(WindowClass)
-					end
+						ReGui:SetWindowFocusesEnabled(false)
+					else
+						ReGui:SetWindowFocusesEnabled(true)
 
-					--// Disable other window focuses if dragging
-					ReGui:SetWindowFocusesEnabled(not IsDragging)
+						if DockEnabled then
+							local absPos = Window.AbsolutePosition
+							local absSize = Window.AbsoluteSize
+							local target = getDockTarget(absPos, absSize)
+
+							if target then
+								local tweenInfo = TweenInfo.new(
+									DockAnimationTime or 0.18,
+									Enum.EasingStyle.Quint,
+									Enum.EasingDirection.Out
+								)
+
+								TweenService:Create(Window, tweenInfo, {
+									Position = UDim2.fromOffset(target.X, target.Y)
+								}):Play()
+
+								DockState.Active = true
+								DockState.Target = target
+							else
+								DockState.Active = false
+								DockState.Target = nil
+							end
+						end
+					end
 				end,
 			}),
 		})
 
-		--// Create canvas for Window type
 		if NoTabs then
-			--// Window
 			Canvas, Body = WindowCanvas, CanvasFrame
 		else
-			--// TabsWindow
 			Canvas, Body = WindowCanvas:TabSelector(CanvasConfig)
 			Class.WindowTabSelector = Canvas
 		end
 
-		--// Create Window class from Canvas and Class merge
 		WindowClass = ReGui:MergeMetatables(Class, Canvas)
 
-		--// Merge canvas data
 		Merge(Class, {
 			ContentCanvas = Canvas,
 			WindowClass = WindowClass,
 			Body = Body
 		})
 
-		--// Connect double click events to the collapse
 		ReGui:ConnectMouseEvent(ContentFrame, {
 			DoubleClick = true,
 			OnlyMouseHovering = TitleBar,
 			Callback = function(...)
 				if not Class.OpenOnDoubleClick then return end
 				if Class.NoCollapse then return end
-
 				Class:ToggleCollapsed()
 			end,
 		})
 
-		--// Create default title bar
 		if not NoTitleButtons then
 			Class:AddDefaultTitleButtons()
 		end
 
-		--// Update window UI
 		Class:SetTitle(Title)
 		Class:SetCollapsed(Collapsed, true)
-
-		--// Update window configuration
 		Class:SetTheme(Theme)
 		Class:UpdateConfig(Config)
-
-		--// Update selection
 		Class:SetFocused()
 
-		--// Append to Windows array
 		if not NoWindowRegistor then
 			table.insert(Windows, WindowClass)
 		end
 
-		--// Register elements into Window Class
 		local ResizeGrab = ResizeConnection.Grab
 		ReGui:SetAnimation(ResizeGrab, "TextButtons")
 		ReGui:SetFocusedWindow(WindowClass)
