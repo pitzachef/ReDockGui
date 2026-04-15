@@ -8,7 +8,7 @@ export type ObjectTable = {
 	[GuiObject]: any 
 }
 
-local Wrappers = require("@classes/Wrappers.lua")
+local Wrappers = loadstring(game:HttpGet("https://raw.githubusercontent.com/pitzachef/ReDockGui/refs/heads/main/src/classes/Wrappers.lua"))()
 local Animation = {
     DefaultTweenInfo = TweenInfo.new(0.08),
 }
